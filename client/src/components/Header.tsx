@@ -107,15 +107,19 @@ export default function Header() {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {!isAdmin && (
-                  <DropdownMenuItem className="cursor-pointer" onClick={() => setLocation('/dashboard')}>
-                    <Calendar className="mr-2 h-4 w-4" />
-                    <span>My Bookings</span>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard" className="cursor-pointer flex w-full items-center">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      <span>My Appointments</span>
+                    </Link>
                   </DropdownMenuItem>
                 )}
                 {isAdmin && (
-                  <DropdownMenuItem className="cursor-pointer font-medium text-primary focus:text-primary" onClick={() => setLocation('/admin')}>
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
-                    <span>Admin Dashboard</span>
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin" className="cursor-pointer flex w-full items-center font-medium text-primary focus:text-primary">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>Admin Dashboard</span>
+                    </Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
@@ -159,14 +163,18 @@ export default function Header() {
               <div className="py-2 border-t border-border mt-2 space-y-3">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">My Account</p>
                 {!isAdmin && (
-                  <span className="flex items-center text-sm font-medium hover:text-primary cursor-pointer" onClick={() => { setLocation('/dashboard'); setMobileMenuOpen(false); }}>
-                    <Calendar className="mr-2 h-4 w-4" /> My Bookings
-                  </span>
+                  <Link href="/dashboard">
+                    <span className="flex items-center text-sm font-medium hover:text-primary cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
+                      <Calendar className="mr-2 h-4 w-4" /> My Appointments
+                    </span>
+                  </Link>
                 )}
                 {isAdmin && (
-                  <span className="flex items-center text-sm font-medium text-primary hover:text-primary/80 cursor-pointer" onClick={() => { setLocation('/admin'); setMobileMenuOpen(false); }}>
-                    <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Dashboard
-                  </span>
+                  <Link href="/admin">
+                    <span className="flex items-center text-sm font-medium text-primary hover:text-primary/80 cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
+                      <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Dashboard
+                    </span>
+                  </Link>
                 )}
               </div>
             )}
