@@ -16,6 +16,8 @@ interface AppointmentModalProps {
 const departments = ['Cardiology','Neurology','Orthopedics','Ophthalmology','General Medicine','Pharmacy'];
 const doctors = ['Dr. Sarah Johnson','Dr. Rajesh Kumar','Dr. Emily Chen','Dr. Michael Brown'];
 
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyZTYyaJPneRiXtXxBmYUDc7So12xuQU3ZXx8rmNXftCzPvdyW7cGO4PBx_PwG-LgHM9w/exec';
+
 export function AppointmentModal({ open, onOpenChange }: AppointmentModalProps) {
   const [formData, setFormData] = useState({
     patientName: '', email: '', phone: '', department: '',
@@ -32,7 +34,7 @@ export function AppointmentModal({ open, onOpenChange }: AppointmentModalProps) 
     setIsLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       // Save to Supabase
       const { error } = await supabase.from('appointments').insert({
         user_id: session?.user?.id || null,
@@ -47,6 +49,22 @@ export function AppointmentModal({ open, onOpenChange }: AppointmentModalProps) 
       });
 
       if (error) throw error;
+
+      // Save to Google Sheets
+      await fetch(SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patientName: formData.patientName,
+          email: formData.email,
+          phone: formData.phone,
+          department: formData.department,
+          doctor: formData.doctor || 'No preference',
+          appointmentDate: formData.appointmentDate,
+          message: formData.message || 'None',
+        }),
+      });
 
       toast.success('Appointment booked! We will contact you soon.');
       setFormData({ patientName: '', email: '', phone: '', department: '', doctor: '', appointmentDate: '', message: '' });
