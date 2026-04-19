@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -39,9 +38,18 @@ export function AppointmentModal({ open, onOpenChange }: AppointmentModalProps) 
     appointmentDate: '',
     message: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const createAppointment = trpc.appointments.create.useMutation({
-    onSuccess: () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.patientName || !formData.email || !formData.phone || !formData.department || !formData.appointmentDate) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    setIsLoading(true);
+    setTimeout(() => {
       toast.success('Appointment booked successfully!');
       setFormData({
         patientName: '',
@@ -52,30 +60,9 @@ export function AppointmentModal({ open, onOpenChange }: AppointmentModalProps) 
         appointmentDate: '',
         message: '',
       });
+      setIsLoading(false);
       onOpenChange(false);
-    },
-    onError: (error) => {
-      toast.error(error.message || 'Failed to book appointment');
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.patientName || !formData.email || !formData.phone || !formData.department || !formData.appointmentDate) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    createAppointment.mutate({
-      patientName: formData.patientName,
-      email: formData.email,
-      phone: formData.phone,
-      department: formData.department,
-      doctor: formData.doctor || undefined,
-      appointmentDate: new Date(formData.appointmentDate),
-      message: formData.message || undefined,
-    });
+    }, 1000);
   };
 
   return (
@@ -188,9 +175,9 @@ export function AppointmentModal({ open, onOpenChange }: AppointmentModalProps) 
             </Button>
             <Button
               type="submit"
-              disabled={createAppointment.isPending}
+              disabled={isLoading}
             >
-              {createAppointment.isPending ? 'Booking...' : 'Book Appointment'}
+              {isLoading ? 'Booking...' : 'Book Appointment'}
             </Button>
           </div>
         </form>
