@@ -50,20 +50,19 @@ export function AppointmentModal({ open, onOpenChange }: AppointmentModalProps) 
 
       if (error) throw error;
 
-      // Save to Google Sheets
-      await fetch(SHEET_URL, {
-        method: 'POST',
+      // Save to Google Sheets via GET request with URL params
+      const params = new URLSearchParams({
+        patientName: formData.patientName,
+        email: formData.email,
+        phone: formData.phone,
+        department: formData.department,
+        doctor: formData.doctor || 'No preference',
+        appointmentDate: formData.appointmentDate,
+        message: formData.message || 'None',
+      });
+      await fetch(`${SHEET_URL}?${params.toString()}`, {
+        method: 'GET',
         mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          patientName: formData.patientName,
-          email: formData.email,
-          phone: formData.phone,
-          department: formData.department,
-          doctor: formData.doctor || 'No preference',
-          appointmentDate: formData.appointmentDate,
-          message: formData.message || 'None',
-        }),
       });
 
       toast.success('Appointment booked! We will contact you soon.');
