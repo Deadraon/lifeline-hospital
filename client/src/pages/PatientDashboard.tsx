@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { LogOut, Calendar, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { AppointmentModal } from '@/components/AppointmentModal';
 import { Toaster } from '@/components/ui/sonner';
+import Header from '@/components/Header';
 
 type Appointment = {
   id: string;
@@ -66,30 +67,9 @@ export default function PatientDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Toaster />
-      {/* Header */}
-      <header className="bg-white border-b shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-white font-bold">L</span>
-            </div>
-            <div>
-              <h1 className="font-bold text-primary">Lifeline Hospital</h1>
-              <p className="text-xs text-gray-500">My Appointments</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500 hidden sm:block">
-              {user?.user_metadata?.name || user?.email}
-            </span>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" /> Logout
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Stats */}

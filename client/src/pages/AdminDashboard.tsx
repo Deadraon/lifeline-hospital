@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LogOut, Users, Calendar, RefreshCw } from 'lucide-react';
+import Header from '@/components/Header';
 
 type Appointment = {
   id: string;
@@ -45,8 +46,25 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    fetchAppointments();
-    fetchPatients();
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) {
+        window.location.href = '/';
+        return;
+      }
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (profile?.role !== 'admin') {
+        window.location.href = '/';
+        return;
+      }
+      
+      fetchAppointments();
+      fetchPatients();
+    });
   }, []);
 
   const updateStatus = async (id: string, status: string) => {
@@ -73,24 +91,8 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-white font-bold">L</span>
-            </div>
-            <div>
-              <h1 className="font-bold text-primary">Lifeline Hospital</h1>
-              <p className="text-xs text-gray-500">Admin Dashboard</p>
-            </div>
-          </div>
-          <Button variant="outline" size="sm" onClick={handleLogout}>
-            <LogOut className="w-4 h-4 mr-2" /> Logout
-          </Button>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Header />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Stats */}
