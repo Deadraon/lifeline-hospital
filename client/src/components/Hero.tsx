@@ -1,7 +1,22 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { useAuth } from '@/_core/hooks/useAuth';
+import { getLoginUrl } from '@/const';
+import { AppointmentModal } from './AppointmentModal';
 
 export default function Hero() {
+  const [appointmentModalOpen, setAppointmentModalOpen] = useState(false);
+  const { user } = useAuth();
+
+  const handleBookAppointment = () => {
+    if (user) {
+      setAppointmentModalOpen(true);
+    } else {
+      window.location.href = getLoginUrl();
+    }
+  };
+
   return (
     <section id="home" className="relative min-h-[600px] md:min-h-[700px] overflow-hidden">
       {/* Background Image */}
@@ -36,6 +51,7 @@ export default function Hero() {
             <Button
               size="lg"
               className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold group"
+              onClick={handleBookAppointment}
             >
               Book an Appointment
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -80,6 +96,8 @@ export default function Hero() {
           className="text-background"
         />
       </svg>
+
+      <AppointmentModal open={appointmentModalOpen} onOpenChange={setAppointmentModalOpen} />
     </section>
   );
 }

@@ -1,9 +1,14 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/_core/hooks/useAuth';
+import { getLoginUrl } from '@/const';
+import { AppointmentModal } from './AppointmentModal';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [appointmentModalOpen, setAppointmentModalOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   const navItems = [
     { label: 'Home', href: '#home' },
@@ -12,6 +17,14 @@ export default function Header() {
     { label: 'Doctors', href: '#doctors' },
     { label: 'Contact', href: '#contact' },
   ];
+
+  const handleBookAppointment = () => {
+    if (user) {
+      setAppointmentModalOpen(true);
+    } else {
+      window.location.href = getLoginUrl();
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
@@ -42,10 +55,31 @@ export default function Header() {
 
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="outline" size="sm">
-            Sign In
-          </Button>
-          <Button size="sm" className="bg-accent hover:bg-accent/90">
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">{user.name}</span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => logout()}
+              >
+                Sign Out
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.location.href = getLoginUrl()}
+            >
+              Sign In
+            </Button>
+          )}
+          <Button
+            size="sm"
+            className="bg-accent hover:bg-accent/90"
+            onClick={handleBookAppointment}
+          >
             Book Appointment
           </Button>
         </div>
@@ -78,16 +112,47 @@ export default function Header() {
               </a>
             ))}
             <div className="flex gap-2 pt-2 border-t border-border">
-              <Button variant="outline" size="sm" className="flex-1">
-                Sign In
-              </Button>
-              <Button size="sm" className="flex-1 bg-accent hover:bg-accent/90">
+              {user ? (
+                <>
+                  <span className="text-sm text-muted-foreground py-2 flex-1">{user.name}</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => {
+                      logout();
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => window.location.href = getLoginUrl()}
+                >
+                  Sign In
+                </Button>
+              )}
+              <Button
+                size="sm"
+                className="flex-1 bg-accent hover:bg-accent/90"
+                onClick={() => {
+                  handleBookAppointment();
+                  setMobileMenuOpen(false);
+                }}
+              >
                 Book Appointment
               </Button>
             </div>
           </nav>
         </div>
       )}
+
+      <AppointmentModal open={appointmentModalOpen} onOpenChange={setAppointmentModalOpen} />
     </header>
   );
 }
