@@ -40,29 +40,51 @@ export function AppointmentModal({ open, onOpenChange }: AppointmentModalProps) 
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.patientName || !formData.email || !formData.phone || !formData.department || !formData.appointmentDate) {
       toast.error('Please fill in all required fields');
       return;
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      toast.success('Appointment booked successfully!');
-      setFormData({
-        patientName: '',
-        email: '',
-        phone: '',
-        department: '',
-        doctor: '',
-        appointmentDate: '',
-        message: '',
+
+    try {
+      const response = await fetch('https://formspree.io/f/mnjlvozk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          'Patient Name': formData.patientName,
+          'Email': formData.email,
+          'Phone': formData.phone,
+          'Department': formData.department,
+          'Doctor': formData.doctor || 'No preference',
+          'Appointment Date': formData.appointmentDate,
+          'Message': formData.message || 'None',
+        }),
       });
+
+      if (response.ok) {
+        toast.success('Appointment booked! We will contact you soon.');
+        setFormData({
+          patientName: '',
+          email: '',
+          phone: '',
+          department: '',
+          doctor: '',
+          appointmentDate: '',
+          message: '',
+        });
+        onOpenChange(false);
+      } else {
+        toast.error('Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      toast.error('Something went wrong. Please try again.');
+    } finally {
       setIsLoading(false);
-      onOpenChange(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -104,7 +126,7 @@ export function AppointmentModal({ open, onOpenChange }: AppointmentModalProps) 
             <Input
               id="phone"
               type="tel"
-              placeholder="+1 (555) 123-4567"
+              placeholder="+91 98765 43210"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               required
