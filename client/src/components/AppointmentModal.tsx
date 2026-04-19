@@ -28,6 +28,8 @@ const doctors = [
   'Dr. Michael Brown',
 ];
 
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyZTYyaJPneRiXtXxBmYUDc7So12xuQU3ZXx8rmNXftCzPvdyW7cGO4PBx_PwG-LgHM9w/exec';
+
 export function AppointmentModal({ open, onOpenChange }: AppointmentModalProps) {
   const [formData, setFormData] = useState({
     patientName: '',
@@ -51,35 +53,32 @@ export function AppointmentModal({ open, onOpenChange }: AppointmentModalProps) 
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://formspree.io/f/mnjlvozk', {
+      await fetch(SHEET_URL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          'Patient Name': formData.patientName,
-          'Email': formData.email,
-          'Phone': formData.phone,
-          'Department': formData.department,
-          'Doctor': formData.doctor || 'No preference',
-          'Appointment Date': formData.appointmentDate,
-          'Message': formData.message || 'None',
+          patientName: formData.patientName,
+          email: formData.email,
+          phone: formData.phone,
+          department: formData.department,
+          doctor: formData.doctor || 'No preference',
+          appointmentDate: formData.appointmentDate,
+          message: formData.message || 'None',
         }),
       });
 
-      if (response.ok) {
-        toast.success('Appointment booked! We will contact you soon.');
-        setFormData({
-          patientName: '',
-          email: '',
-          phone: '',
-          department: '',
-          doctor: '',
-          appointmentDate: '',
-          message: '',
-        });
-        onOpenChange(false);
-      } else {
-        toast.error('Something went wrong. Please try again.');
-      }
+      toast.success('Appointment booked! We will contact you soon.');
+      setFormData({
+        patientName: '',
+        email: '',
+        phone: '',
+        department: '',
+        doctor: '',
+        appointmentDate: '',
+        message: '',
+      });
+      onOpenChange(false);
     } catch (error) {
       toast.error('Something went wrong. Please try again.');
     } finally {
