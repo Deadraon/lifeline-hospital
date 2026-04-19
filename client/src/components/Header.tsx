@@ -4,10 +4,12 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { getLoginUrl } from '@/const';
 import { AppointmentModal } from './AppointmentModal';
+import { SignUpModal } from './SignUpModal';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [appointmentModalOpen, setAppointmentModalOpen] = useState(false);
+  const [signUpModalOpen, setSignUpModalOpen] = useState(false);
   const { user, logout } = useAuth();
 
   const navItems = [
@@ -19,11 +21,7 @@ export default function Header() {
   ];
 
   const handleBookAppointment = () => {
-    if (user) {
-      setAppointmentModalOpen(true);
-    } else {
-      window.location.href = getLoginUrl();
-    }
+    setAppointmentModalOpen(true);
   };
 
   return (
@@ -70,9 +68,9 @@ export default function Header() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => window.location.href = getLoginUrl()}
+              onClick={() => setSignUpModalOpen(true)}
             >
-              Sign In
+              Sign Up
             </Button>
           )}
           <Button
@@ -132,9 +130,12 @@ export default function Header() {
                   variant="outline"
                   size="sm"
                   className="flex-1"
-                  onClick={() => window.location.href = getLoginUrl()}
+                  onClick={() => {
+                    setSignUpModalOpen(true);
+                    setMobileMenuOpen(false);
+                  }}
                 >
-                  Sign In
+                  Sign Up
                 </Button>
               )}
               <Button
@@ -153,6 +154,11 @@ export default function Header() {
       )}
 
       <AppointmentModal open={appointmentModalOpen} onOpenChange={setAppointmentModalOpen} />
+      <SignUpModal 
+        open={signUpModalOpen} 
+        onOpenChange={setSignUpModalOpen}
+        onSignUpSuccess={() => setAppointmentModalOpen(true)}
+      />
     </header>
   );
 }
