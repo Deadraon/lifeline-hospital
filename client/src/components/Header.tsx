@@ -13,9 +13,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 
 export default function Header() {
+  const [, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [appointmentModalOpen, setAppointmentModalOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -81,11 +82,9 @@ export default function Header() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           {navItems.map((item) => (
-            <Link key={item.label} href={item.href}>
-              <span className="text-sm font-medium text-foreground hover:text-primary transition-colors cursor-pointer">
-                {item.label}
-              </span>
-            </Link>
+            <a key={item.label} href={item.href} className="text-sm font-medium text-foreground hover:text-primary transition-colors cursor-pointer">
+              {item.label}
+            </a>
           ))}
         </nav>
 
@@ -107,19 +106,17 @@ export default function Header() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <Link href="/dashboard">
-                  <DropdownMenuItem className="cursor-pointer">
+                {!isAdmin && (
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setLocation('/dashboard')}>
                     <Calendar className="mr-2 h-4 w-4" />
-                    <span>My Appointments</span>
+                    <span>My Bookings</span>
                   </DropdownMenuItem>
-                </Link>
+                )}
                 {isAdmin && (
-                  <Link href="/admin">
-                    <DropdownMenuItem className="cursor-pointer font-medium text-primary focus:text-primary">
-                      <LayoutDashboard className="mr-2 h-4 w-4" />
-                      <span>Admin Dashboard</span>
-                    </DropdownMenuItem>
-                  </Link>
+                  <DropdownMenuItem className="cursor-pointer font-medium text-primary focus:text-primary" onClick={() => setLocation('/admin')}>
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    <span>Admin Dashboard</span>
+                  </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600 cursor-pointer">
@@ -151,28 +148,25 @@ export default function Header() {
         <div className="md:hidden border-t border-border bg-secondary/50 absolute w-full left-0 bg-background shadow-lg pb-4">
           <nav className="container py-4 flex flex-col gap-3">
             {navItems.map((item) => (
-              <Link key={item.label} href={item.href}>
-                <span className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 block"
-                  onClick={() => setMobileMenuOpen(false)}>
-                  {item.label}
-                </span>
-              </Link>
+              <a key={item.label} href={item.href}
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 block"
+                onClick={() => setMobileMenuOpen(false)}>
+                {item.label}
+              </a>
             ))}
             
             {user && (
               <div className="py-2 border-t border-border mt-2 space-y-3">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">My Account</p>
-                <Link href="/dashboard">
-                  <span className="flex items-center text-sm font-medium hover:text-primary cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
-                    <Calendar className="mr-2 h-4 w-4" /> My Appointments
+                {!isAdmin && (
+                  <span className="flex items-center text-sm font-medium hover:text-primary cursor-pointer" onClick={() => { setLocation('/dashboard'); setMobileMenuOpen(false); }}>
+                    <Calendar className="mr-2 h-4 w-4" /> My Bookings
                   </span>
-                </Link>
+                )}
                 {isAdmin && (
-                  <Link href="/admin">
-                    <span className="flex items-center text-sm font-medium text-primary hover:text-primary/80 cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
-                      <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Dashboard
-                    </span>
-                  </Link>
+                  <span className="flex items-center text-sm font-medium text-primary hover:text-primary/80 cursor-pointer" onClick={() => { setLocation('/admin'); setMobileMenuOpen(false); }}>
+                    <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Dashboard
+                  </span>
                 )}
               </div>
             )}
