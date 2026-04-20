@@ -48,7 +48,7 @@ export default function Hero() {
             <Button
               size="lg"
               variant="outline"
-              className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10"
+              className="hidden sm:inline-flex border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10"
             >
               Learn More
             </Button>

@@ -136,16 +136,34 @@ export default function Header() {
           </Button>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors">
-          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
+        {/* Mobile Controls */}
+        <div className="md:hidden flex items-center gap-2">
+          {!user && (
+            <Button 
+              variant="default" 
+              size="sm" 
+              className="h-8 px-3 text-xs bg-primary hover:bg-primary/90 text-primary-foreground"
+              onClick={() => setAuthModalOpen(true)}
+            >
+              Login / Sign Up
+            </Button>
+          )}
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 hover:bg-secondary rounded-lg transition-colors"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border bg-secondary/50 absolute w-full left-0 bg-background shadow-lg pb-4">
+      <div 
+        className={`md:hidden absolute top-full left-0 w-full bg-background/95 backdrop-blur-md shadow-md border-b border-border transition-all duration-300 ease-in-out overflow-hidden origin-top ${
+          mobileMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="pb-4">
           <nav className="container py-4 flex flex-col gap-3">
             {navItems.map((item) => (
               <a key={item.label} href={item.href}
@@ -159,12 +177,12 @@ export default function Header() {
               <div className="py-2 border-t border-border mt-2 space-y-3">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">My Account</p>
                 {!isAdmin && (
-                  <span className="flex items-center text-sm font-medium hover:text-primary cursor-pointer" onClick={() => window.location.href = '/dashboard'}>
+                  <span className="flex items-center text-sm font-medium hover:text-primary cursor-pointer" onClick={() => { window.location.href = '/dashboard'; setMobileMenuOpen(false); }}>
                     <Calendar className="mr-2 h-4 w-4" /> My Appointments
                   </span>
                 )}
                 {isAdmin && (
-                  <span className="flex items-center text-sm font-medium text-primary hover:text-primary/80 cursor-pointer" onClick={() => window.location.href = '/admin'}>
+                  <span className="flex items-center text-sm font-medium text-primary hover:text-primary/80 cursor-pointer" onClick={() => { window.location.href = '/admin'; setMobileMenuOpen(false); }}>
                     <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Dashboard
                   </span>
                 )}
@@ -172,24 +190,19 @@ export default function Header() {
             )}
             
             <div className="flex gap-2 pt-4 border-t border-border mt-2">
-              {user ? (
+              {user && (
                 <Button variant="outline" size="sm" className="flex-1 text-red-600 hover:text-red-700 hover:bg-red-50" onClick={handleLogout}>
                   Logout
-                </Button>
-              ) : (
-                <Button variant="outline" size="sm" className="flex-1"
-                  onClick={() => { setAuthModalOpen(true); setMobileMenuOpen(false); }}>
-                  Login / Sign Up
                 </Button>
               )}
               <Button size="sm" className="flex-1 bg-accent hover:bg-accent/90"
                 onClick={() => { setAppointmentModalOpen(true); setMobileMenuOpen(false); }}>
-                Book
+                Book Appointment
               </Button>
             </div>
           </nav>
         </div>
-      )}
+      </div>
 
       <AppointmentModal open={appointmentModalOpen} onOpenChange={setAppointmentModalOpen} />
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} onSuccess={() => {}} />
