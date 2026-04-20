@@ -45,13 +45,6 @@ export default function Hero() {
               Book an Appointment
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="hidden sm:inline-flex border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10"
-            >
-              Learn More
-            </Button>
           </div>
 
           {/* Quick Stats */}
